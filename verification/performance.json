@@ -1,0 +1,58 @@
+{
+  "runtime": "v24.19.0",
+  "scope": "Synthetic CPU kernels in Node.js; not browser end-to-end, decoding, drawing or exports. Median of three warm samples. ROI 1024x768, view rotated 17 degrees.",
+  "results": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "bits": 8,
+      "pixels": 2073600,
+      "javascriptPreprocessMs": 7.3711999999999875,
+      "javascriptROIMs": 3.823999999999984,
+      "matlabPreprocessMs": 9.2928,
+      "matlabROIMs": 35.6977,
+      "processedPixelMiB": 1.9775390625,
+      "matlabProcessedPixelMiB": 15.8203125,
+      "count": 786436
+    },
+    {
+      "width": 2560,
+      "height": 2048,
+      "bits": 8,
+      "pixels": 5242880,
+      "javascriptPreprocessMs": 18.892899999999997,
+      "javascriptROIMs": 2.6791000000000054,
+      "matlabPreprocessMs": 19.3281,
+      "matlabROIMs": 43.0289,
+      "processedPixelMiB": 5,
+      "matlabProcessedPixelMiB": 40,
+      "count": 786436
+    },
+    {
+      "width": 4096,
+      "height": 3072,
+      "bits": 16,
+      "pixels": 12582912,
+      "javascriptPreprocessMs": 52.40840000000003,
+      "javascriptROIMs": 7.1766999999999825,
+      "matlabPreprocessMs": 43.0108,
+      "matlabROIMs": 66.17580000000001,
+      "processedPixelMiB": 24,
+      "matlabProcessedPixelMiB": 96,
+      "count": 786436
+    },
+    {
+      "width": 6000,
+      "height": 4000,
+      "bits": 16,
+      "pixels": 24000000,
+      "javascriptPreprocessMs": 109.89959999999996,
+      "javascriptROIMs": 4.109300000000076,
+      "matlabPreprocessMs": 80.1876,
+      "matlabROIMs": 106.4717,
+      "processedPixelMiB": 45.7763671875,
+      "matlabProcessedPixelMiB": 183.10546875,
+      "count": 786436
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "files": [
+    "synthetic_moire_DN_ROI_001_gray.txt",
+    "synthetic_moire_DN_ROI_001_gray.xlsx",
+    "synthetic_moire_DN_ROI_001_with_ROI.png",
+    "synthetic_moire_DN_ROI_001_without_ROI.png",
+    "synthetic_moire_DN_ROI_001_histogram.png"
+  ],
+  "matrixShape": [
+    260,
+    294
+  ],
+  "validPixels": 36735,
+  "nanPixels": 39705,
+  "meanDN": 115.85411732680005,
+  "maxDN": 209.0,
+  "wholeImageSize": [
+    800,
+    520
+  ],
+  "wholeImageExact": true,
+  "histogramSize": [
+    2400,
+    1220
+  ],
+  "xlsxReopenedBy": "openpyxl"
+}

@@ -1,0 +1,17 @@
+✔ calibration, units and exposure scaling (1.0069ms)
+✔ MATLAB-reference fixtures: pixels, boundaries, rotation, statistics, bins and NaN matrices (9.8262ms)
+✔ native bit-depth PNG/BMP/TIFF round trips (6.7325ms)
+✔ MATLAB-generated compressed and palette files retain every sample (18.1737ms)
+✔ identity preprocessing preserves native integer buffers without aliasing the source (0.2432ms)
+✔ export names begin at 001 and skip any partially occupied five-file group (0.8033ms)
+✔ color and transparency are rejected; green marks preserve full-resolution base pixels (1.2498ms)
+✔ all five exports, source-oriented NaNs, compressed numeric XLSX and ZIP (14.142ms)
+✔ viewport preview and rectangle geometry remain independent of quantitative arrays (0.2854ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1204.6195

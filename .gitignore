@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.sites-runtime/
+*.log
+test-artifacts/
+tests/image-fixtures/matlab_gray.jpg
+verification/export-histogram.png
