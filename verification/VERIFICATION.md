@@ -54,3 +54,9 @@ The scanline ROI algorithm is faster in these cases (about 9–26×); whole-imag
 The processed 4096 × 3072 16-bit buffer occupies 24 MiB versus 96 MiB for the MATLAB double buffer (75% less); for 8-bit arrays the reduction is 87.5%. These figures describe that pixel buffer, **not total application memory**. Source buffers, previews, compressed files and temporary export allocations also consume memory.
 
 Raw timing evidence: `performance.json` and `matlab-benchmark.json`. Reproduction: `pnpm benchmark` uses the retained MATLAB baseline. A new machine requires regenerating the MATLAB timing baseline for a same-machine comparison.
+
+## Resizable panels (2026-10-19)
+
+The empty sidebar placeholder was removed; the five sections retain their original heights and 8 px gaps. Native browser pointer drags changed the sidebar from 334 to 434 px and the histogram from 325 to 445 px. Reload preserved both settings. Double-click reset, arrow keys, and minimum/maximum constraints were exercised. At 1280 x 600, sidebar and analysis scrolling preserve their minimum usable sizes; at a 280 px image-panel height in a tall window, the compact empty state keeps the sample button inside the canvas.
+
+The sample calculation stayed unchanged across both drags: 32,500 pixels, maximum DN 209, mean DN 113.308154, peak 86.304764 and mean 46.789634 uW/cm2. TypeScript checking, all nine automated test groups, and the Pages production build passed. No image-processing, ROI-selection, physics, or export algorithms changed. Screenshots remain local verification deliverables.
