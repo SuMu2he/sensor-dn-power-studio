@@ -1,5 +1,6 @@
 import {forwardRef,useEffect,useImperativeHandle,useRef} from 'react';
 import {geometry,roiVertices,pointInPolygon,polygonArea,type Point,type ROI,type ImageInfo} from './core';
+import {rectangleHandleCursor} from './roi-cursor';
 export type Guide={id:number;kind:'v'|'h';value:number};
 export type Preview={rgba:Uint8ClampedArray;width:number;height:number;min:number;max:number};
 export type Tile={rgba:Uint8ClampedArray;width:number;height:number;x:number;y:number};
@@ -62,7 +63,7 @@ class Stage{
   };
   private pointerMove=(e:PointerEvent)=>{
     const screen=this.screen(e),point=this.world(screen),p=this.props();this.hover=point;
-    if(!this.down){this.canvas.style.cursor=p.tool!=='select'?'crosshair':this.hit(screen).mode==='pan'?'grab':'move';if(this.poly.length)this.paint();return;}
+    if(!this.down){const hit=this.hit(screen);this.canvas.style.cursor=p.tool!=='select'?'crosshair':hit.mode==='resize'?rectangleHandleCursor(hit.index):hit.mode==='pan'?'grab':hit.mode==='guide'?(p.guides.find(guide=>guide.id===hit.index)?.kind==='v'?'col-resize':'row-resize'):'move';if(this.poly.length)this.paint();return;}
     const d=this.down,dx=point.x-d.start.x,dy=point.y-d.start.y;
     if(d.mode==='pan'){this.tx=d.tx+screen.x-d.screen.x;this.ty=d.ty+screen.y-d.screen.y;this.fitted=false;this.canvas.style.cursor='grabbing';this.scheduleTile();}
     else if(d.mode==='guide'){this.guideDraft=p.guides.map(g=>g.id===d.index?{...g,value:g.kind==='v'?point.x:point.y}:g);}
@@ -73,6 +74,7 @@ class Stage{
       if(d.mode==='move')this.draft=d.roi.kind==='rectangle'?{...d.roi,x:d.roi.x+dx,y:d.roi.y+dy}:{kind:'polygon',points:d.roi.points.map(v=>({x:v.x+dx,y:v.y+dy}))};
       else if(d.mode==='vertex'&&d.roi.kind==='polygon')this.draft={kind:'polygon',points:d.roi.points.map((v,i)=>i===d.index?point:v)};
       else if(d.mode==='resize'&&d.roi.kind==='rectangle'){
+        this.canvas.style.cursor=rectangleHandleCursor(d.index);
         const r=d.roi;let x1=r.x,x2=r.x+r.width,y1=r.y,y2=r.y+r.height;
         if([0,6,7].includes(d.index))x1=point.x;if([2,3,4].includes(d.index))x2=point.x;if([0,1,2].includes(d.index))y1=point.y;if([4,5,6].includes(d.index))y2=point.y;
         let width=Math.max(1,Math.round(Math.abs(x2-x1))),height=Math.max(1,Math.round(Math.abs(y2-y1)));
@@ -86,7 +88,7 @@ class Stage{
   private pointerUp=(e:PointerEvent)=>{
     if(!this.down)return;const p=this.props(),d=this.down;
     if(this.draft){p.onROI(this.draft);if(d.mode==='draw')p.onTool('select');}if(this.guideDraft)p.onGuides(this.guideDraft);
-    this.down=null;this.draft=null;this.guideDraft=null;if(this.canvas.hasPointerCapture(e.pointerId))this.canvas.releasePointerCapture(e.pointerId);this.canvas.style.cursor=p.tool==='select'?'grab':'crosshair';this.paint();
+    this.down=null;this.draft=null;this.guideDraft=null;if(this.canvas.hasPointerCapture(e.pointerId))this.canvas.releasePointerCapture(e.pointerId);this.canvas.style.cursor=d.mode==='resize'?rectangleHandleCursor(d.index):d.mode==='move'||d.mode==='vertex'?'move':p.tool==='select'?'grab':'crosshair';this.paint();
   };
   private wheel=(e:WheelEvent)=>{if(!this.props().info)return;e.preventDefault();const screen=this.screen(e),point=this.world(screen);this.s=Math.min(120,Math.max(.0001,this.s*(e.deltaY<0?1.18:1/1.18)));this.tx=screen.x-point.x*this.s;this.ty=screen.y-point.y*this.s;this.fitted=false;this.props().onZoom(this.s*100);this.paint();this.scheduleTile();};
   private doubleClick=(e:MouseEvent)=>{e.preventDefault();if(this.props().tool==='polygon')this.finishPolygon();else if(this.hit(this.screen(e)).mode==='pan')this.fit();};
@@ -106,8 +108,8 @@ class Stage{
     ctx.font='11px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText('X-Pixel',this.w/2,this.h-3);ctx.save();ctx.translate(10,this.h/2);ctx.rotate(-Math.PI/2);ctx.fillText('Y-Pixel',0,0);ctx.restore();
     if(p.showGuides){ctx.strokeStyle='#27bfd1';ctx.lineWidth=1;for(const guide of this.guideDraft||p.guides){ctx.beginPath();if(guide.kind==='v'){const x=this.pixel({x:guide.value,y:0}).x;ctx.moveTo(x,0);ctx.lineTo(x,this.h-34);}else{const y=this.pixel({x:0,y:guide.value}).y;ctx.moveTo(35,y);ctx.lineTo(this.w,y);}ctx.stroke();}}
     const r=this.draft||p.roi;
-    if(r){const vv=roiVertices(r).map(v=>this.pixel(v));ctx.beginPath();vv.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();ctx.strokeStyle='#67d22d';ctx.lineWidth=1.8;ctx.stroke();ctx.fillStyle='rgba(103,210,45,.035)';ctx.fill();const handles=(r.kind==='rectangle'?rectHandles(r):r.points).map(v=>this.pixel(v));ctx.fillStyle='#14251f';for(const v of handles){ctx.fillRect(v.x-3,v.y-3,6,6);ctx.strokeRect(v.x-3,v.y-3,6,6);}ctx.fillStyle='#69cf32';ctx.font='bold 11px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.textBaseline='bottom';ctx.fillText(r.kind==='rectangle'?`ROI · ${r.width} × ${r.height} px`:'ROI',vv[0].x,vv[0].y-6);}
-    if(this.poly.length){ctx.strokeStyle='#67d22d';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();const points=[...this.poly,this.hover].map(v=>this.pixel(v));points.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.stroke();ctx.setLineDash([]);for(const v of points.slice(0,-1)){ctx.fillStyle='#67d22d';ctx.fillRect(v.x-3,v.y-3,6,6);}}
+    if(r){const vv=roiVertices(r).map(v=>this.pixel(v));ctx.beginPath();vv.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();ctx.strokeStyle='#14251faa';ctx.lineWidth=4;ctx.stroke();ctx.strokeStyle='#a8ff2e';ctx.lineWidth=2.2;ctx.stroke();ctx.fillStyle='rgba(168,255,46,.025)';ctx.fill();const handles=(r.kind==='rectangle'?rectHandles(r):r.points).map(v=>this.pixel(v));ctx.fillStyle='#a8ff2e';ctx.strokeStyle='#243b25';ctx.lineWidth=1;for(const v of handles){ctx.fillRect(v.x-4,v.y-4,8,8);ctx.strokeRect(v.x-4,v.y-4,8,8);}const label=r.kind==='rectangle'?`ROI · ${r.width} × ${r.height} px`:'ROI';ctx.font='bold 14px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.textBaseline='bottom';const labelWidth=ctx.measureText(label).width,lx=Math.max(4,Math.min(this.w-labelWidth-8,vv[0].x)),ly=Math.max(24,vv[0].y-7);ctx.fillStyle='#14251fce';ctx.fillRect(lx-3,ly-19,labelWidth+7,21);ctx.fillStyle='#a8ff2e';ctx.fillText(label,lx,ly);}
+    if(this.poly.length){ctx.strokeStyle='#a8ff2e';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();const points=[...this.poly,this.hover].map(v=>this.pixel(v));points.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.stroke();ctx.setLineDash([]);for(const v of points.slice(0,-1)){ctx.fillStyle='#a8ff2e';ctx.fillRect(v.x-4,v.y-4,8,8);}}
   }
 }
 export const ImageStage=forwardRef<StageHandle,Props>(function ImageStage(props,ref){

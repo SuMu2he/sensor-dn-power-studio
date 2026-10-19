@@ -1,7 +1,7 @@
 import {useCallback,useEffect,useLayoutEffect,useRef,useState,type CSSProperties,type PointerEvent} from 'react';
 
 const STORAGE_KEY='sensor-dn-panel-layout-v1';
-const DEFAULT_SIDEBAR=334,DEFAULT_HISTOGRAM=325,SPLITTER_SIZE=12;
+const DEFAULT_SIDEBAR=300,DEFAULT_HISTOGRAM=325,SPLITTER_SIZE=12;
 const MIN_SIDEBAR=280,MAX_SIDEBAR=600,MIN_ANALYSIS=360;
 const MIN_IMAGE=280,MIN_HISTOGRAM=220;
 const clamp=(value:number,min:number,max:number)=>Math.min(max,Math.max(min,Math.round(value)));

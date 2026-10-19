@@ -9,7 +9,7 @@ MATLAB `MoirePowerDensityApp` 的独立网页版本。所有操作界面使用�
 ## 使用
 
 1. `Import` 导入 PNG、TIFF、BMP 或灰度 JPEG；也可将文件拖入网页。首次可使用 `Try a synthetic sample`。
-2. `Preprocessing` 输入 Ka、Kb。计算数据统一为 `clip(round(Ka × raw DN + Kb), 0, 2^bitDepth − 1)`。越界数据自动限制到上下限，并在本区显示红色说明。
+2. `Image → Preprocessing` 输入 Ka、Kb。计算数据统一为 `clip(round(Ka × raw DN + Kb), 0, 2^bitDepth − 1)`。越界数据自动限制到上下限，并在本区显示红色说明。
 3. `Rectangle` 拖出绿色矩形，输入 W/H 或拖动控制点调整；中间的锁定按钮保持长宽比。`Polygon` 逐点绘制，Enter、双击或点击起点完成；Esc 取消，Backspace 撤销最后一个点。完成后可以拖动顶点和整个 ROI。
 4. 输入 `Parameters`，点击 `Calculate`。只有点击 `Export` 才保存文件。
 5. `Path` 可在支持 File System Access API 的浏览器中选择目录；未选择目录或浏览器不支持时，`Export` 下载包含五项结果的 ZIP。
@@ -18,9 +18,15 @@ MATLAB `MoirePowerDensityApp` 的独立网页版本。所有操作界面使用�
 
 参考线可拖动；V/H 添加，Clear 清除，Guides 隐藏/显示，右键参考线可删除。`Contrast` 仅将显示范围映射到当前最小/最大 DN，保持计算和保存数据不变。
 
-左侧仅保留五个区块，默认宽度 334 px；区块高度为 100/148/250/254/140 px，间隔为 12 px，左侧字号比初版增大 1 px，Save 下方不再显示空白占位栏。拖动左右区域之间的竖向分隔条可调整侧栏宽度，拖动图像与柱状图之间的横向分隔条可调整两者高度。布局会自动记忆；双击分隔条或聚焦后按 Enter 恢复该方向默认大小，也可使用方向键微调。较小窗口保留滚动和最小可用尺寸。
+左侧依次为 `Import / Parameters / Image / Results / Save`，默认宽度 300 px，区块间隔 12 px。Image 内按 Preprocessing、ROI、Guides、View 分组，分组间距 22 px；原图像顶部工具栏已移入此栏。区块按内容确定高度，左栏独立滚动，Save 下方没有占位栏。Import、Calculate、Export 采用相同主按钮样式且保留文字；Save 分三行放置路径与 Path、可编辑前缀与固定 Name 标签、整行 Export。拖动左右区域之间的竖向分隔条可调整侧栏宽度，拖动图像与柱状图之间的横向分隔条可调整两者高度。布局会自动记忆；双击分隔条或聚焦后按 Enter 恢复默认大小，也可使用方向键微调。
+
+所有可编辑数值框均支持四则运算、小数、括号与科学计数法，例如 `630/2`、`(540+100)/2`、`1e-3`。输入时保留表达式，Enter 或失焦后求值；除零、非法表达式和超范围值标红并禁用 Calculate / Export，Esc 恢复上次有效值。参数原有范围与 ROI 整数要求保留。输入框右侧沿用浏览器原有的灰色实心三角箭头，给上下箭头留出完整高度；表达式文本与原生步进区分开，避免数值遮挡。
+
+ROI 使用更亮的绿色边框和较大的尺寸文字。边框显示四向移动指针，八个矩形控制点显示对应的水平、垂直或对角缩放指针；控制点优先识别。
 
 `Expand` 在独立窗口显示柱状图，按窗口尺寸和屏幕像素比例重新绘制。网页和独立窗口的左上角摘要可直接选中复制；功率密度保留三位小数、DN 显示整数，计算精度不变。独立窗口通过浏览器会话存储接收统计快照，网址仅带随机编号；快照不上传服务器，关闭主窗口后仍可查看。导出柱状图直接绘制为 3840 × 2160 PNG，两张实验图片仍保留原始方向、原始分辨率与文件格式。
+
+Histogram 右上角依次为 DN 范围、`Style`、`Expand`，移除了重复的 ROI PIXELS 标签。原生 DN 范围带位深，如 `DN 0–255 (8 bit)`。`Style` 打开 Chart Appearance，可调整柱形颜色与透明度、均值/峰值线的颜色/线宽/线形、标注字号与背景、四边框、刻度、三个轴标题与字号、网格和背景色。实时预览后 Apply 保存到当前浏览器，Cancel 丢弃未应用修改，Reset 将预览恢复默认后仍需 Apply。已打开的独立窗口通过浏览器 storage 事件同步已应用外观，未来 4K 导出也采用同一设置。默认柱形为深绿、均值线为深蓝虚线，并补齐右边框；小图或相邻标记自动使用横向标注，避免文字被裁切。外观设置不进入计算 Worker，不改变物理换算。
 
 右上角 `?` 打开快速上手、章节导航与可滚动完整说明；`!` 打开应用信息。两个弹窗优先从与 Binary Mask Studio 相同的今日诗词接口 `https://v1.jinrishici.com/all.json` 获取随机古诗文，显示作者与篇名。后台预取下一条，近期 40 条已显示内容保存在本浏览器，刷新后仍参与去重；服务连续返回重复内容时最多重试 3 次。每次预取最多等待 2.8 秒，断网、超时或无效响应时使用本地诗句兜底。诗句请求不包含图片、实验参数或 Cookie，并禁止附带页面 URL 的 Referer。Esc、关闭按钮或点击遮罩均可关闭弹窗。
 
@@ -64,6 +70,9 @@ P_uW_per_cm2 = P_W_per_cm2 × 1e6
 |---|---|
 | `src/main.tsx` | 界面、参数、操作和状态；修改按钮文字可从此开始 |
 | `src/style.css` | 颜色、控件尺寸与分组布局 |
+| `src/number-field.tsx` / `src/numeric-expression.ts` | 原生步进箭头、四则表达式与数值错误拦截 |
+| `src/chart-style.ts` / `src/chart-style-dialog.tsx` / `src/chart-style.css` | 外观模型、持久化、实时预览与设置窗口 |
+| `src/roi-cursor.ts` | 矩形八个控制点的缩放指针映射 |
 | `src/panel-layout.tsx` | 面板尺寸、可拖拽分隔条与布局记忆 |
 | `src/image-stage.tsx` | Canvas 图像、旋转、缩放、ROI 和参考线交互 |
 | `src/core.ts` | 单位换算、取整限幅、ROI 扫描线选择、统计和直方图 |

@@ -1,0 +1,29 @@
+{
+  "source": "Public synthetic moire fixture; no experimental image",
+  "files": [
+    "qa_sensor_dn_style_001_gray.txt",
+    "qa_sensor_dn_style_001_gray.xlsx",
+    "qa_sensor_dn_style_001_with_ROI.png",
+    "qa_sensor_dn_style_001_without_ROI.png",
+    "qa_sensor_dn_style_001_histogram.png"
+  ],
+  "histogram": {
+    "width": 3840,
+    "height": 2160,
+    "appliedBarColor": "#254a63",
+    "matchingPixels": 522130
+  },
+  "images": {
+    "width": 800,
+    "height": 520,
+    "unmarkedPixelsEqualSource": true
+  },
+  "matrix": {
+    "rows": 250,
+    "columns": 130,
+    "pixelCount": 32500,
+    "maxDN": 209,
+    "meanDN": 113.30815384615384
+  },
+  "xlsxNumericCells": 32500
+}
