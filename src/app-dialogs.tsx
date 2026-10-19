@@ -18,7 +18,7 @@ const chapters:{id:string;label:string;title:string;body:ReactNode}[]=[
   </>},
   {id:'roi',label:'ROI',title:'2. Rectangles and polygons',body:<>
     <p>Select Rectangle and drag on the image. Enter W and H in pixels, or drag an edge or corner handle. The chain button locks the current width-to-height ratio. Select Polygon and click vertices; finish by pressing Enter, double-clicking or clicking the first vertex. Esc cancels a new ROI; Backspace removes its most recent polygon vertex.</p>
-    <p>The ROI has a bright green outline and larger size label. Hover over an edge to see a four-way move cursor; drag to move the ROI. The eight rectangle handles show horizontal, vertical or diagonal resize cursors. Handles take priority over edges. Drag a polygon vertex to edit it. Delete clears the ROI. Pixel centers use MATLAB-compatible 1-based coordinates. Measurements select original source pixels inside the ROI, including when the view is rotated; display interpolation never changes measured DN.</p>
+    <p>The ROI has a bright green outline and larger size label without a background fill. Hover over an edge to see a four-way move cursor; drag to move the ROI. The eight rectangle handles show horizontal, vertical or diagonal resize cursors. Handles take priority over edges. Drag a polygon vertex to edit it. Delete clears the ROI. Pixel centers use MATLAB-compatible 1-based coordinates. Measurements select original source pixels inside the ROI, including when the view is rotated; display interpolation never changes measured DN.</p>
   </>},
   {id:'parameters',label:'Parameters',title:'3. Calibration and units',body:<>
     <p>Enter wavelength λ in nm, square-pixel side length in μm, gain in DN/e⁻, quantum efficiency in percent and exposure in ms. QE 55 means 55%. Values must be positive; QE must not exceed 100%. Gain is DN per electron, so electrons are calculated by dividing DN by gain.</p>
@@ -31,6 +31,8 @@ const chapters:{id:string;label:string;title:string;body:ReactNode}[]=[
   </>},
   {id:'appearance',label:'Appearance',title:'5. Chart appearance',body:<>
     <p>Select Style to open Chart Appearance. Adjust bar color and opacity; mean and peak line colors, widths and styles; marker labels; border and tick settings; three axis titles and font sizes; grid settings; and figure and plot backgrounds. Numeric style fields also accept arithmetic expressions. Widths and font sizes are displayed in pixels.</p>
+    <p>Chart text uses Segoe UI, with Arial and the system sans-serif font as fallbacks. Marker labels, ticks, axis titles and the summary have font color controls and Bold / Italic checkboxes. Mean and peak font colors are independent of their line colors. Summary includes separate Bold / Italic options for the filename and numerical results. These settings apply to the preview, main chart, expanded window and 4K histogram export.</p>
+    <p>The default bars are green at 0.7 opacity. Mean and peak lines have width 2.5; the mean is blue and dashed, and the peak is red and solid. Marker labels, ticks and all three axis titles use size 16. The black plot border has width 1.5. Ticks and titles are black; the light gray grid uses solid lines of width 1. Both backgrounds are white, and Label background is off.</p>
     <p>The preview updates while you edit. Apply saves the appearance in this browser and updates the main chart, open expanded charts and future 4K exports. Cancel, Escape or closing the dialog discards its unapplied changes. Reset restores the default appearance in the preview; select Apply to keep it. Appearance changes do not alter image DN, ROI selection or computed power density.</p>
   </>},
   {id:'view',label:'View & guides',title:'6. Image view and panel layout',body:<>
@@ -80,7 +82,7 @@ export function AppDialog({kind,onClose}:{kind:'help'|'about';onClose:()=>void})
         <div className="about-logo"><img src={import.meta.env.BASE_URL+'icon.svg'} alt=""/><strong>Sensor DN Power Studio</strong></div>
         <dl className="about-metadata">
           <div><dt>Application name</dt><dd>Sensor DN Power Studio</dd></div>
-          <div><dt>Version</dt><dd>Ver.1.2</dd></div>
+          <div><dt>Version</dt><dd>Ver.1.3</dd></div>
           <div><dt>Last updated</dt><dd>2026.10.19</dd></div>
           <div><dt>Author / Maintainer</dt><dd>Mingze Sun</dd></div>
           <div><dt>Powered by</dt><dd>OpenAI Codex</dd></div>
