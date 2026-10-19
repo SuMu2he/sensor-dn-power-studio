@@ -6,15 +6,26 @@ export function drawHistogram(ctx:CanvasRenderingContext2D,w:number,h:number,res
   const font=(size:number,bold=false,italic=false)=>{ctx.font=chartFont(size,bold,italic);};
   const fitText=(text:string,maxWidth:number)=>{let value=text;while(value.length>1&&ctx.measureText(value).width>maxWidth)value=value.slice(0,-1);return value===text?value:value.slice(0,-1)+'…';};
   ctx.clearRect(0,0,w,h);ctx.fillStyle=style.background;ctx.fillRect(0,0,w,h);
-  ctx.fillStyle=style.summaryColor;font(12,style.fileBold,style.fileItalic);ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle=style.summaryColor;font(style.summarySize,style.fileBold,style.fileItalic);ctx.textAlign='left';ctx.textBaseline='top';
+  let summaryHeight=0;
   if(includeSummary){
     const count=`  |  N = ${result.count.toLocaleString('en-US')}`;
     ctx.fillText(fitText(name+count,w-28),14,10);
-    font(w<800?10:12,style.summaryBold,style.summaryItalic);ctx.fillText(`Mean: ${result.average.toFixed(3)} μW/cm² (DN ${Math.round(result.mean)})   |   Peak: ${result.peak.toFixed(3)} μW/cm² (DN ${Math.round(result.max)})`,14,29);
+    font(style.summarySize,style.summaryBold,style.summaryItalic);
+    const summary=`Mean: ${result.average.toFixed(3)} μW/cm² (DN ${Math.round(result.mean)})   |   Peak: ${result.peak.toFixed(3)} μW/cm² (DN ${Math.round(result.max)})`;
+    const lines:string[]=[];let line='';
+    for(const word of summary.split(/\s+/)){
+      const next=line?`${line} ${word}`:word;
+      if(line&&ctx.measureText(next).width>w-28){lines.push(line);line=word;}else line=next;
+    }
+    if(line)lines.push(line);
+    const lineHeight=style.summarySize*1.55;
+    lines.forEach((text,index)=>ctx.fillText(fitText(text,w-28),14,10+lineHeight*(index+1)));
+    summaryHeight=Math.ceil(10+lineHeight*(lines.length+1));
   }
   const hist=result.hist,yMax=Math.max(1,...hist.counts)*1.25;
   font(style.tickSize,style.tickBold,style.tickItalic);
-  const left=Math.max(62,ctx.measureText(Math.round(yMax).toLocaleString('en-US')).width+style.yTitleSize+20),right=w-Math.max(24,ctx.measureText(String(hist.xlim[1])).width/2+8),top=(includeSummary?48:0)+style.powerTitleSize+style.tickSize+22,bottom=h-style.xTitleSize-style.tickSize-22,width=Math.max(1,right-left),height=Math.max(20,bottom-top);
+  const left=Math.max(62,ctx.measureText(Math.round(yMax).toLocaleString('en-US')).width+style.yTitleSize+20),right=w-Math.max(24,ctx.measureText(String(hist.xlim[1])).width/2+8),top=summaryHeight+style.powerTitleSize+style.tickSize+22,bottom=h-style.xTitleSize-style.tickSize-22,width=Math.max(1,right-left),height=Math.max(20,bottom-top);
   const x=(value:number)=>left+(value-hist.xlim[0])/(hist.xlim[1]-hist.xlim[0])*width;
   ctx.fillStyle=style.plotBackground;ctx.fillRect(left,top,width,height);
   ctx.strokeStyle=style.gridColor;ctx.lineWidth=style.gridWidth;ctx.setLineDash(lineDash(style.gridLine,style.gridWidth));font(style.tickSize,style.tickBold,style.tickItalic);ctx.fillStyle=style.tickColor;
