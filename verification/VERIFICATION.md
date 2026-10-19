@@ -72,3 +72,9 @@ The sample calculation stayed unchanged across both drags: 32,500 pixels, maximu
 - The sidebar gap is 12 px and its text sizes increased by 1 px. Import and Parameters received 8 px and 4 px of additional height respectively to prevent clipping. The sidebar remains scrollable; Results replaces ROI Results.
 
 The final production preview loaded under /sensor-dn-power-studio/, and all five enlarged sidebar cards had scrollHeight equal to clientHeight (no clipped content). TypeScript checking and the production build passed.
+
+## Online poetry (2026-10-19)
+
+Help and About now use the same public Jinrishici endpoint as Binary Mask Studio: https://v1.jinrishici.com/all.json. A direct live API check returned HTTP 200, JSON content/author/origin fields and Access-Control-Allow-Origin: *. Local browser verification then displayed two distinct API responses, both tagged online: one by Gu Dehui and one by Wang Wei. These are not entries in the offline fallback pool.
+
+The client prefetches a single next quote, shares pending requests, persists the latest 40 displayed texts for deduplication, retries repeated responses at most three times within a 2.8-second prefetch deadline, and falls back without blocking either dialog. Requests use no-store, omit credentials, suppress the Referer and carry only a random cache-busting query value; no image data or experiment parameters are sent. Five added test groups cover field validation, prefetch consumption, request options, history across reloads, bounded duplicate retries, concurrent consumers, network/HTTP/JSON/timeout failures and denied storage. The offline pool also cycles through all 12 entries without a repetition.

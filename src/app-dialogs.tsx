@@ -1,26 +1,6 @@
 import {useEffect,useRef,useState,type ReactNode} from 'react';
 import './app-dialogs.css';
-
-const poems=[
-  ['明月松间照，清泉石上流。','王维《山居秋暝》'],
-  ['行到水穷处，坐看云起时。','王维《终南别业》'],
-  ['欲穷千里目，更上一层楼。','王之涣《登鹳雀楼》'],
-  ['采菊东篱下，悠然见南山。','陶渊明《饮酒·其五》'],
-  ['会当凌绝顶，一览众山小。','杜甫《望岳》'],
-  ['长风破浪会有时，直挂云帆济沧海。','李白《行路难·其一》'],
-  ['竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。','苏轼《定风波·莫听穿林打叶声》'],
-  ['人间有味是清欢。','苏轼《浣溪沙·细雨斜风作晓寒》'],
-  ['斯是陋室，惟吾德馨。','刘禹锡《陋室铭》'],
-  ['问渠那得清如许？为有源头活水来。','朱熹《观书有感·其一》'],
-  ['不畏浮云遮望眼，自缘身在最高层。','王安石《登飞来峰》'],
-  ['纸上得来终觉浅，绝知此事要躬行。','陆游《冬夜读书示子聿》'],
-] as const;
-let previousPoem=-1;
-function nextPoem(){
-  const offset=Math.floor(Math.random()*(poems.length-(previousPoem<0?0:1)));
-  const index=previousPoem<0?offset:offset>=previousPoem?offset+1:offset;
-  previousPoem=index;return poems[index];
-}
+import {poetryClient} from './poetry';
 
 const quickStart=[
   'Import a grayscale image. Native integer DN and bit depth are preserved.',
@@ -55,13 +35,19 @@ const chapters:{id:string;label:string;title:string;body:ReactNode}[]=[
   {id:'export',label:'Export',title:'6. Files, numbering and resolution',body:<>
     <p>Path selects an output directory in browsers that support directory access. Otherwise Export downloads one ZIP. The default prefix is OriginalName_DN_ROI. Groups begin at _001; folder exports skip any number already occupied by one of the five files. ZIP numbering is remembered for this site in this browser and resets if its site data is cleared.</p>
     <p>Each export contains a two-dimensional gray TXT matrix, the same matrix in Excel, an original-orientation processed image with a green ROI, the same processed image without markings, and a 4K histogram PNG (3840 × 2160). Both experimental images retain their original full resolution and file format. No image resampling is introduced by the 4K chart setting.</p>
-    <p>Matrices use the ROI bounding rectangle in original image coordinates. Positions outside a polygon are NaN; Excel writes those positions as text NaN. Finite DN entries are rounded and clipped integers. JPEG re-encoding is lossy; use lossless images or the matrices for exact pixel comparisons. All processing and file generation take place locally in your browser.</p>
+    <p>Matrices use the ROI bounding rectangle in original image coordinates. Positions outside a polygon are NaN; Excel writes those positions as text NaN. Finite DN entries are rounded and clipped integers. JPEG re-encoding is lossy; use lossless images or the matrices for exact pixel comparisons. All image processing and file generation take place locally in your browser. Only the decorative poetry is fetched from Jinrishici; image data and calibration parameters stay on your device.</p>
   </>},
 ];
 
 export function AppDialog({kind,onClose}:{kind:'help'|'about';onClose:()=>void}){
   const dialog=useRef<HTMLElement>(null),close=useRef<HTMLButtonElement>(null);
-  const [poem]=useState(nextPoem);
+  const [poem,setPoem]=useState(()=>poetryClient.takePrepared()??poetryClient.fallback());
+  useEffect(()=>{
+    let active=true;
+    if(poem.origin==='online')void poetryClient.prefetch();
+    else void poetryClient.next().then(next=>{if(active&&next){setPoem(next);void poetryClient.prefetch();}});
+    return()=>{active=false;};
+  },[]);
   useEffect(()=>{
     const previous=document.activeElement as HTMLElement|null;close.current?.focus();
     const keyboard=(event:KeyboardEvent)=>{
@@ -94,7 +80,7 @@ export function AppDialog({kind,onClose}:{kind:'help'|'about';onClose:()=>void})
           <div><dt>Powered by</dt><dd>OpenAI Codex</dd></div>
         </dl>
       </div>}
-      <footer className="dialog-quote" lang="zh-CN"><p>{poem[0]}</p><cite>{poem[1]}</cite></footer>
+      <footer className="dialog-quote" lang="zh-CN" data-quote-source={poem.origin} title={poem.origin==='online'?'Jinrishici · online poetry':'Offline poetry fallback'}><p>{poem.content}</p><cite>{poem.attribution}</cite></footer>
     </section>
   </div>;
 }

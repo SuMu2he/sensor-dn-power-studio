@@ -8,6 +8,7 @@ import {validatePrefix} from './export-data';
 import {nextGroupStem} from './export-naming';
 import {PanelSplitter,usePanelLayout} from './panel-layout';
 import {AppDialog,LinkIcon} from './app-dialogs';
+import {poetryClient} from './poetry';
 import './style.css';
 function NumberField({value,onCommit,label,min=-Infinity,max=Infinity,step='any',disabled=false,id}:{value:number;onCommit:(value:number)=>void;label:string;min?:number;max?:number;step?:number|'any';disabled?:boolean;id?:string}){
   const [text,setText]=useState(String(value));useEffect(()=>setText(String(value)),[value]);
@@ -25,7 +26,7 @@ function App(){
   const [result,setResult]=useState<Result|null>(null),[prefix,setPrefix]=useState(''),[folder,setFolder]=useState<FileSystemDirectoryHandle|null>(null),[busy,setBusy]=useState(''),[status,setStatus]=useState('Import a grayscale image to begin.'),[error,setError]=useState(''),[zoom,setZoom]=useState(100);
   const [modal,setModal]=useState<'help'|'about'|null>(null),[guideMenu,setGuideMenu]=useState<{id:number;x:number;y:number}|null>(null),[memory,setMemory]=useState(0),[preprocessMs,setPreprocessMs]=useState(0),[sample,setSample]=useState(false);
   const closeModal=useCallback(()=>setModal(null),[]);
-  useEffect(()=>()=>client.close(),[client]);
+  useEffect(()=>{void poetryClient.prefetch();return()=>client.close();},[client]);
   useEffect(()=>{const close=()=>setGuideMenu(null);window.addEventListener('pointerdown',close);return()=>window.removeEventListener('pointerdown',close);},[]);
   const derived=conversion(parameters),isBusy=!!busy,rectangle=roi?.kind==='rectangle'?roi:null;
   function invalidate(message='ROI updated. Select Calculate to refresh the results.'){serial.current++;setResult(null);setStatus(message);}
