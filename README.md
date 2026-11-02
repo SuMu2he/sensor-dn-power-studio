@@ -4,8 +4,6 @@
 
 无需安装、无需登录。浏览器本地处理图像；源码公开不会上传使用者导入的图片。
 
-MATLAB `MoirePowerDensityApp` 的独立网页版本。所有操作界面使用英文（Help/About 底部按用户要求保留随机古诗文原文）；参考 Binary Mask Studio 的浅色、深绿和荧光绿视觉风格。原 MATLAB 程序与参考网站不受影响。
-
 ## 使用
 
 1. `Import` 导入 PNG、TIFF、BMP 或灰度 JPEG；也可将文件拖入网页。首次可使用 `Try a synthetic sample`。
